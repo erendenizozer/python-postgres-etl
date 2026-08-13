@@ -41,10 +41,14 @@ def insert_posts(posts):
     for post in posts:
         cursor.execute(
             """
-            INSERT INTO raw_data (title, body)
-            VALUES (%s, %s)
+            INSERT INTO raw_data (id, title, body)
+            VALUES (%s, %s, %s)
+            ON CONFLICT (id)
+            DO UPDATE SET
+            title = EXCLUDED.title,
+            body = EXCLUDED.body
             """,
-            (post["title"], post["body"])
+            (post["id"], post["title"], post["body"])
         )
 
     connection.commit()
