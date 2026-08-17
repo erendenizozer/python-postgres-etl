@@ -2,6 +2,7 @@ import os
 
 import psycopg2
 from dotenv import load_dotenv
+from transform import transform_posts
 
 load_dotenv()
 
@@ -55,3 +56,22 @@ def insert_posts(posts):
 
     cursor.close()
     connection.close()
+
+def insert_staging_posts(transformed_posts):
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        for post in transformed_posts:
+            cursor.execute("""INSERT INTO staging_data (id, title,body)
+                    VALUES (%s, %s, %s)
+                    ON CONFLICT (id)
+                    DO UPDATE SET
+                    title = EXCLUDED.title,
+                    body = EXCLUDED.body""",
+                    (post["id"], post["title"], post["body"])
+                    )
+
+        connection.commit()
+
+        cursor.close()
+        connection.close()
