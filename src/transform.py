@@ -1,3 +1,7 @@
+import logging
+
+logger = logging.getLogger(__name__)
+
 def transform_posts(posts):
     transformed_posts = []
 
@@ -16,5 +20,6 @@ def transform_posts(posts):
         }
 
         transformed_posts.append(transformed_post)
+    logger.info("Transformed %d posts", len(transformed_posts))
 
     return transformed_posts
