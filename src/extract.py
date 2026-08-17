@@ -13,9 +13,9 @@ def extract_data():
 
     posts = response.json()
 
-    logger.info("Extracted %d posts", len(response.json()))
+    logger.info("Extracted %d posts", len(posts))
 
-    return response.json()
+    return posts
 
 
 

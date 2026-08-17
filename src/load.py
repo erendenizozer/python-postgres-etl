@@ -1,10 +1,12 @@
 import os
-
+import logging
 import psycopg2
 from dotenv import load_dotenv
 from transform import transform_posts
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 
 def get_connection():
@@ -54,6 +56,8 @@ def insert_posts(posts):
 
     connection.commit()
 
+    logger.info("Loaded %d data into the raw_data", len(posts))
+
     cursor.close()
     connection.close()
 
@@ -71,7 +75,13 @@ def insert_staging_posts(transformed_posts):
                     (post["id"], post["title"], post["body"])
                     )
 
+        
+
+            
+
         connection.commit()
+
+        logger.info("Loaded %d data into the staging_data", len(transformed_posts))
 
         cursor.close()
         connection.close()
