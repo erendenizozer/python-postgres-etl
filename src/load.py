@@ -41,47 +41,54 @@ def insert_posts(posts):
     connection = get_connection()
     cursor = connection.cursor()
 
-    for post in posts:
-        cursor.execute(
-            """
-            INSERT INTO raw_data (id, title, body)
-            VALUES (%s, %s, %s)
-            ON CONFLICT (id)
-            DO UPDATE SET
-            title = EXCLUDED.title,
-            body = EXCLUDED.body
-            """,
-            (post["id"], post["title"], post["body"])
-        )
+    try:
+        for post in posts:
+            cursor.execute(
+                """
+                INSERT INTO raw_data (id, title, body)
+                VALUES (%s, %s, %s)
+                ON CONFLICT (id)
+                DO UPDATE SET
+                title = EXCLUDED.title,
+                body = EXCLUDED.body
+                """,
+                (post["id"], post["title"], post["body"])
+            )
 
-    connection.commit()
+        connection.commit()
 
-    logger.info("Loaded %d data into the raw_data", len(posts))
-
-    cursor.close()
-    connection.close()
+        logger.info("Loaded %d records into the raw_data", len(posts))
+    except Exception as e:
+         connection.rollback()
+         logger.error("Failed to load %d records into the raw_data: %s", len(posts), e)
+         raise
+    finally:
+        cursor.close()
+        connection.close()
 
 def insert_staging_posts(transformed_posts):
         connection = get_connection()
         cursor = connection.cursor()
 
-        for post in transformed_posts:
-            cursor.execute("""INSERT INTO staging_data (id, title,body)
-                    VALUES (%s, %s, %s)
-                    ON CONFLICT (id)
-                    DO UPDATE SET
-                    title = EXCLUDED.title,
-                    body = EXCLUDED.body""",
-                    (post["id"], post["title"], post["body"])
-                    )
+        try:
+            for post in transformed_posts:
+                cursor.execute("""INSERT INTO staging_data (id, title,body)
+                        VALUES (%s, %s, %s)
+                        ON CONFLICT (id)
+                        DO UPDATE SET
+                        title = EXCLUDED.title,
+                        body = EXCLUDED.body""",
+                        (post["id"], post["title"], post["body"])
+                        )
 
-        
+            connection.commit()
 
-            
+            logger.info("Loaded %d records into the staging_data", len(transformed_posts))
 
-        connection.commit()
-
-        logger.info("Loaded %d data into the staging_data", len(transformed_posts))
-
-        cursor.close()
-        connection.close()
+        except Exception as e:
+             connection.rollback()
+             logger.error("Failed to load %d records into the staging_data: %s", len(transformed_posts), e)
+             raise
+        finally:
+            cursor.close()
+            connection.close()
