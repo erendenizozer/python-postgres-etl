@@ -2,7 +2,7 @@ import os
 import logging
 import psycopg2
 from dotenv import load_dotenv
-from transform import transform_posts
+from .transform import transform_posts
 
 load_dotenv()
 
