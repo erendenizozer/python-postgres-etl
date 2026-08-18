@@ -57,7 +57,7 @@ def insert_posts(posts):
 
         connection.commit()
 
-        logger.info("Loaded %d data into the raw_data", len(posts))
+        logger.info("Loaded %d records into the raw_data", len(posts))
     except Exception as e:
          connection.rollback()
          logger.error("Failed to load %d records into the raw_data: %s", len(posts), e)
@@ -83,7 +83,7 @@ def insert_staging_posts(transformed_posts):
 
             connection.commit()
 
-            logger.info("Loaded %d data into the staging_data", len(transformed_posts))
+            logger.info("Loaded %d records into the staging_data", len(transformed_posts))
 
         except Exception as e:
              connection.rollback()
