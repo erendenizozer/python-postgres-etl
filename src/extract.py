@@ -21,4 +21,3 @@ def extract_data():
     return posts
 
 
-
