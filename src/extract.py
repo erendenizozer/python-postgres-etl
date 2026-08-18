@@ -19,5 +19,3 @@ def extract_data():
     logger.info("Extracted %d posts", len(posts))
 
     return posts
-
-
