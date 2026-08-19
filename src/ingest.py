@@ -3,7 +3,7 @@ import logging
 
 from .extract import extract_data
 from .transform import transform_posts
-from .load import create_table, insert_posts, insert_staging_posts
+from .load import create_table, insert_posts, insert_staging_posts, get_max_id
 
 logging.basicConfig(
     level=logging.INFO,
@@ -18,9 +18,16 @@ args = parser.parse_args()
 
 posts = extract_data()
 
-insert_posts(posts)
+max_id = get_max_id()
 
-transformed_posts = transform_posts(posts)
+new_posts = []
+for post in posts:
+    if post["id"] > max_id:
+        new_posts.append(posts)
+
+insert_posts(new_posts)
+
+transformed_posts = transform_posts(new_posts)
 
 insert_staging_posts(transformed_posts)
 
