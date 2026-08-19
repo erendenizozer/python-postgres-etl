@@ -2,7 +2,7 @@ import os
 import logging
 import psycopg2
 from dotenv import load_dotenv
-from transform import transform_posts
+from .transform import transform_posts
 
 load_dotenv()
 
@@ -92,3 +92,18 @@ def insert_staging_posts(transformed_posts):
         finally:
             cursor.close()
             connection.close()
+def get_max_id():
+     connection = get_connection()
+     cursor = connection.cursor()
+
+     cursor.execute(""" SELECT MAX(id) FROM raw_data""")
+     result = cursor.fetchone() # Returns (100,) if the max id is 100
+     if result is None:
+        max_id = 0
+     else:
+         max_id = result[0] # Now we get the 100
+     
+     connection.commit()
+     connection.close()
+
+     return max_id
